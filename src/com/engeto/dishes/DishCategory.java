@@ -1,16 +1,15 @@
-package com.engeto.orders;
+package com.engeto.dishes;
 
 public enum DishCategory {
-    SOUP("soup"),BEEF_MEAT("beef meat"),PORK_MEAT("pork meat"),POULTRY_MEAT("poultry meat"),VEGETARIAN_FOOD("vegetarian food"),DRINKS("drinks");
+    SOUP("soup"), BEEF_MEAT("beef meat"), PORK_MEAT("pork meat"), POULTRY_MEAT("poultry meat"), FISH("fish"), VEGETARIAN_FOOD("vegetarian food"), DRINKS("drinks");
 
     private String description;
 
-    DishCategory (String description){
+    DishCategory(String description) {
         this.description = description;
     }
 
-    @Override
-    public String toString() {
+    public String getDescription() {
         return description;
     }
 }

@@ -1,4 +1,4 @@
-package com.engeto.orders;
+package com.engeto.dishes;
 
 import java.util.Comparator;
 

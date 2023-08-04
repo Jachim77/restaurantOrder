@@ -1,2 +1,7 @@
-package com.engeto.services;public class RestaurantException {
+package com.engeto.services;
+
+public class RestaurantException extends Exception {
+    public RestaurantException(String message) {
+        super(message);
+    }
 }
