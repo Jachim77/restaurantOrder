@@ -1,0 +1,18 @@
+hovězí vývar	60	10	SOUP	hovezi_vyvar_01
+cibulačka	55	10	SOUP	cibulacka_01
+hovězí biftek s hranolkami	250	20	BEEF_MEAT	hovezi_biftek_01;hovezi_biftek_02;hovezi_biftek_03
+grilovaný steak s opečenými bramborami	280	15	BEEF_MEAT	grilovany_steak_01;grilovany_steak_02
+svíčková na smetaně s knedlíky	230	10	BEEF_MEAT	svickova_01;svickova_02,svickova_03
+grilovana krkovice s americkými brambory	270	15	PORK_MEAT	grilovana_krkovice_01
+vepřový steak s hranolkama	240	15	PORK_MEAT	veprovy_steak_01;veprovy_steak_02
+vepřová panenka s gratinovanými brambory	290	15	PORK_MEAT	veprova_panenka_01;veprova_panenka_02
+plněné kuřecí prso se šťouchanými brambory	230	20	POULTRY_MEAT	plnene_kureci_prso_01
+kuřecí prso na smetanové omáčce	240	20	POULTRY_MEAT	kureci_prso_na_smetanove_omacce_01
+grilovana_kachni_prsa_s_varenymi_brambory	320	15	POULTRY_MEAT	grilovana_kachni_prsa_01
+bramborove_noky_s_cuketou	220	15	VEGETARIAN_FOOD	bramborove_noky_01;bramborove_noky_02
+špenátové rizoto s kozim sýrem	210	15	VEGETARIAN_FOOD	spenatove_rizoto_01;spenatove_rizoto_02
+mattoni	30	3	DRINKS	mattoni_01
+coca-cola	40	3	DRINKS	coca_cola_01
+pivo plzeň	50	3	DRINKS	pivo_plzen_01
+pivo nealko	40	3	DRINKS	pivo_nealko_01
+čaj ovocný	30	5	DRINKS

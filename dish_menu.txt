@@ -1,0 +1,5 @@
+cibulačka	55	10	SOUP	cibulacka_01;
+svíčková na smetaně s knedlíky	230	10	BEEF_MEAT	svickova_01;svickova_02,svickova_03;
+hovězí biftek s hranolkami	250	20	BEEF_MEAT	hovezi_biftek_01;hovezi_biftek_02;hovezi_biftek_03;
+vepřová panenka s gratinovanými brambory	290	15	PORK_MEAT	veprova_panenka_01;veprova_panenka_02;
+grilovana krkovice s americkými brambory	270	15	PORK_MEAT	grilovana_krkovice_01;
