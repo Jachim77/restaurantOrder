@@ -1,5 +1,6 @@
 package com.engeto.orders;
 
+import com.engeto.dishes.DishMenu;
 import com.engeto.services.RestaurantException;
 import com.engeto.services.RestaurantSettings;
 
@@ -20,7 +21,6 @@ public class OrderList {
     private List<Order> orderListAtTable = new ArrayList<>();
     private String comment;
     private Boolean valid;
-    private static File file = new File(RestaurantSettings.getInputFileOrders());
 
     public OrderList(int tableId) {
         this.orderListId = checkNextOrderListId();
@@ -69,69 +69,71 @@ public class OrderList {
         this.valid = valid;
     }
 
-    public static File getFile() {
-        return file;
-    }
 
     //endregion
     //vytvoří objednávku a přiřadí ji do seznamu objednávek k danému stolu
-    public void addOrderToOrderList(int index, int numberOfPieces, int waiterId) throws RestaurantException {
-        Order order = new Order(orderListId, tableId, index, numberOfPieces, waiterId);
-        orderListAtTable.add(order);
-        orderSummary.add(order);
+    public void addOrderToOrderList(int index, int numberOfPieces, int waiterId) {
+        try {
+            Order order = new Order(orderListId, tableId, index, numberOfPieces, waiterId);
+            orderListAtTable.add(order);
+            orderSummary.add(order);
+            System.out.println("Přidána objednávka - " + DishMenu.getMenu().get(index) + "do seznamu objednávek: " + orderListId + ", id: " + order.getOrderId());
+        } catch (RestaurantException e) {
+            System.err.println(e.getLocalizedMessage());
+        }
     }
 
     //vypíše seznam objednávek pro daný stůl
     public String getAllOrderToATable() {
-        String c;
+        String numberOfTable;
         if ((tableId >= 1) && (tableId <= 9)) {
-            c = " " + String.valueOf(tableId);
+            numberOfTable = " " + (tableId);
         } else {
-            c = String.valueOf(tableId);
+            numberOfTable = String.valueOf(tableId);
         }
 
-        String a = "** Objednávky pro stůl č." + c + " ** \n" + "****\n";
+        String ordersAtTable = "** Objednávky pro stůl č." + numberOfTable + " ** \n" + "****\n";
         for (Order order : orderListAtTable) {
-            BigDecimal b = (order.getDish().getPrice()).multiply(BigDecimal.valueOf(order.getNumberOfPieces()));
+            BigDecimal price = (order.getDish().getPrice()).multiply(BigDecimal.valueOf(order.getNumberOfPieces()));
             String orderStart = order.getOrderedTime().format(DateTimeFormatter.ofPattern("HH:mm"));
             String orderFinish;
             if (order.getFulfilmentTime() == null) {
                 orderFinish = "neuzavřeno";
             } else orderFinish = order.getFulfilmentTime().format(DateTimeFormatter.ofPattern("HH:mm"));
-            a += +order.getOrderId() + ". " + order.getDish().getTitle() + " " + order.getNumberOfPieces() + "x (" + b + " Kč):\t" + orderStart + "-" + orderFinish + "\tčíšník č. " + order.getWaiterId() + "\n";
+            ordersAtTable += +order.getOrderId() + ". " + order.getDish().getTitle() + " " + order.getNumberOfPieces() + "x (" + price + " Kč):\t" + orderStart + "-" + orderFinish + "\tčíšník č. " + order.getWaiterId() + "\n";
         }
         ;
-        a += "******\n";
-        return a;
+        ordersAtTable += "******\n";
+        return ordersAtTable;
     }
 
     //vrátí objednávku ze seznamu na určité pozici
-    public Order getOrderFromList(int a) throws RestaurantException {
+    public Order getOrderFromList(int IdNumber) {
         for (Order order : orderListAtTable) {
-            if (order.getOrderId() == a) {
+            if (order.getOrderId() == IdNumber) {
                 return order;
             }
         }
-        throw new RestaurantException("Nepodařilo se nalézt oboedjnávku s uvedeným id: " + a);
+        return null;
     }
 
     //vypíše všechny objednávky
     public static String getAllOrders() {
-        String b = "Pčehled všech objednávek:  \n";
+        String allOrders = "Přehled všech objednávek:  \n";
         for (Order order : orderSummary) {
-            b = b + order + "\n";
+            allOrders += order + "\n";
         }
-        return b;
+        return allOrders;
     }
 
     //načte objednávky ze souboru
-    public static void addAllOrdersFromFile(File filename) throws RestaurantException {
+    public static void addAllOrdersFromFile(String filename) {
         int lineNumber = 0;
-        String[] items = new String[0];
+        String[] items;
         String line = "";
-        if (filename.exists()) {
-            try (Scanner scanner = new Scanner(new BufferedReader(new FileReader(filename)))) {
-                while (scanner.hasNextLine()) {
+        try (Scanner scanner = new Scanner(new BufferedReader(new FileReader(filename)))) {
+            while (scanner.hasNextLine()) {
+                try {
                     lineNumber++;
                     line = scanner.nextLine();
                     items = line.split(RestaurantSettings.getItemsSeparator());
@@ -146,16 +148,19 @@ public class OrderList {
                             orderSummary.add(order);
                         }
                     } else {
-                        throw new RestaurantException("Špatný počet položek na řádku " + lineNumber);
+                        System.err.println("Špatný počet položek na řádku " + lineNumber);
                     }
+                } catch (NumberFormatException e) {
+                    System.err.println("Špatně zadaná jedna nebo více hodnot v souboru " + filename + " na řádku " + lineNumber + "\n" + e.getLocalizedMessage());
+                } catch (DateTimeException e) {
+                    System.err.println("Špatně zadaná jedna nebo více hodnot v souboru " + filename + " na řádku " + lineNumber + "\n" + e.getLocalizedMessage());
+                } catch (RestaurantException e) {
+                    System.err.println(e.getLocalizedMessage());
+
                 }
-            } catch (FileNotFoundException e) {
-                throw new RestaurantException("Nepodařilo se nalézt soubor " + file + "\n" + e.getLocalizedMessage());
-            } catch (NumberFormatException e) {
-                throw new RestaurantException("Špatně zadaná jedna nebo více hodnot v souboru " + filename + " na řádku " + lineNumber + "\n" + e.getLocalizedMessage());
-            } catch (DateTimeException e) {
-                throw new RestaurantException("Špatně zadaná jedna nebo více hodnot v souboru " + filename + " na řádku " + lineNumber + "\n" + e.getLocalizedMessage());
             }
+        } catch (FileNotFoundException e) {
+            System.err.println("Nepodařilo se nalézt soubor " + filename + "\n" + e.getLocalizedMessage());
         }
     }
 
@@ -173,6 +178,7 @@ public class OrderList {
                         + order.getWaiterId() + RestaurantSettings.getItemsSeparator();
                 printWriter.println(record);
             }
+            System.out.println("Aktuální seznam objednávek byl uložen do souboru: " + FileName);
         } catch (IOException e) {
             throw new RestaurantException("Došlo k chybě při zápisu do souboru" + e.getLocalizedMessage());
         }
@@ -190,6 +196,15 @@ public class OrderList {
             ListIds.add(order.getOrderList());
         }
         return Collections.max(ListIds) + 1;
+    }
+
+    //vrátí celkovou cenu objednávek pro daný stůl
+    public BigDecimal getToTalPriceForOrdersToATable() {
+        BigDecimal totalPrice = BigDecimal.valueOf(0);
+        for (Order order : orderListAtTable) {
+            totalPrice = totalPrice.add(order.getDish().getPrice().multiply(BigDecimal.valueOf(order.getNumberOfPieces())));
+        }
+        return totalPrice;
     }
 
 

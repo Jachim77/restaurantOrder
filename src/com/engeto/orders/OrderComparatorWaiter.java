@@ -5,7 +5,7 @@ import java.util.Comparator;
 public class OrderComparatorWaiter implements Comparator<Order> {
 
     @Override
-    public int compare(Order o1, Order o2) {
-        return String.valueOf(o1.getWaiterId()).compareTo(String.valueOf(o2.getWaiterId()));
+    public int compare(Order order1, Order order2) {
+        return String.valueOf(order1.getWaiterId()).compareTo(String.valueOf(order2.getWaiterId()));
     }
 }

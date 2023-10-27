@@ -31,29 +31,29 @@ public class TableList {
 
     //vrátí seznam všech stolů
     public static String getAllTables() {
-        String s = "Seznam všech stolů: \n";
+        String listOfAllTables = "Seznam všech stolů: \n";
         for (Table table : tables) {
-            s += "Stůl číslo: " + table.getNumberOfTable() + ", počet míst: " + table.getNumberOfSeats() + "\n";
+            listOfAllTables += "Stůl číslo: " + table.getNumberOfTable() + ", počet míst: " + table.getNumberOfSeats() + "\n";
         }
-        return s;
+        return listOfAllTables;
     }
 
     //vrátí stůl se zadaným id
-    public static Table getTableFromList(int d) throws RestaurantException {
+    public static Table getTableFromList(int idNumber) throws RestaurantException {
         for (Table table : tables) {
-            if (table.getNumberOfTable() == d) {
+            if (table.getNumberOfTable() == idNumber) {
                 return table;
             }
         }
-        throw new RestaurantException("Nepodařilo se najít stůl s uvedenýn id:" + d);
+        throw new RestaurantException("Nepodařilo se najít stůl s uvedenýn id:" + idNumber);
     }
 
     //odebere stúl s daným id ze seznamu
-    public void removeTableWithId(int d) throws RestaurantException {
+    public void removeTableWithId(int idNumber) throws RestaurantException {
         for (Table table : tables) {
-            if (table.getNumberOfTable() == d) {
+            if (table.getNumberOfTable() == idNumber) {
                 tables.remove(table);
-            } else throw new RestaurantException("Nepodařilo se najít stůl s uvedeným id: " + d);
+            } else throw new RestaurantException("Nepodařilo se najít stůl s uvedeným id: " + idNumber);
         }
     }
 
@@ -95,6 +95,7 @@ public class TableList {
                         + table.getNumberOfSeats();
                 printWriter.println(record);
             }
+            System.out.println("Aktuální seznam stolů byl uložen do souboru: " + FileName);
         } catch (IOException e) {
             throw new RestaurantException("Došlo k chybě při zápisu do souboru" + e.getLocalizedMessage());
         }

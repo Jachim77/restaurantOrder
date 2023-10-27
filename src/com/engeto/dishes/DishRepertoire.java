@@ -9,27 +9,22 @@ import java.util.*;
 
 public class DishRepertoire {
     private List<Dish> dishRep = new ArrayList<>();
-    private static final File file = new File(RestaurantSettings.getInputFileDishrep());
 
     public List<Dish> getDishRep() {
         return dishRep;
-    }
-
-    public static File getFile() {
-        return file;
     }
 
     public void setDishRep(List<Dish> dishRep) {
         this.dishRep = dishRep;
     }
 
-    public void addAllFromFileToRepertoire(File fileName) throws RestaurantException {
+    public void addAllFromFileToRepertoire(String fileName) {
         int lineNumber = 0;
         String[] items = new String[0];
         String line = "";
-        if (fileName.exists()) {
-            try (Scanner scanner = new Scanner(new BufferedReader(new FileReader(fileName)))) {
-                while (scanner.hasNextLine()) {
+        try (Scanner scanner = new Scanner(new BufferedReader(new FileReader(fileName)))) {
+            while (scanner.hasNextLine()) {
+                try {
                     lineNumber++;
                     line = scanner.nextLine();
                     items = line.split(RestaurantSettings.getItemsSeparator());
@@ -40,14 +35,14 @@ public class DishRepertoire {
                         Dish dish = new Dish(items[0], new BigDecimal(items[1]), Integer.parseInt(items[2]), DishCategory.valueOf(items[3]));
                         dishRep.add(dish);
                     } else {
-                        throw new RestaurantException("Špatný počet položek na řádku " + lineNumber);
+                        System.err.println("Špatný počet položek na řádku " + lineNumber + "\n jídlo nebylo ořidáno do repertáru");
                     }
+                } catch (NumberFormatException | RestaurantException e) {
+                    System.err.println("Špatně zadaná jedna nebo více hodnot v souboru " + fileName + " na řádku " + lineNumber + ": " + items[1] + "," + items[2] + "\n-- jídlo nebylo přidáno do repertoáru --" + "\n" + e.getLocalizedMessage());
                 }
-            } catch (FileNotFoundException e) {
-                throw new RestaurantException("Nepodařilo se nalézt soubor " + fileName + "\n" + e.getLocalizedMessage());
-            } catch (NumberFormatException e) {
-                throw new RestaurantException("Špatně zadaná jedna nebo více hodnot v souboru " + fileName + " na řádku " + lineNumber + ": " + items[1] + "," + items[2] + "\n" + e.getLocalizedMessage());
             }
+        } catch (FileNotFoundException e) {
+            System.err.println("Nepodařilo se nalézt soubor " + fileName + "\n" + e.getLocalizedMessage());
         }
     }
 
@@ -58,12 +53,18 @@ public class DishRepertoire {
                         + dish.getPrice() + RestaurantSettings.getItemsSeparator()
                         + dish.getPreparationTime() + RestaurantSettings.getItemsSeparator()
                         + dish.getDishCategory() + RestaurantSettings.getItemsSeparator();
-                for (String image : dish.getListOfImages()) {
-                    record = record + image;
+                int i = 1;
+                List<String> listOfImages = new ArrayList<>(dish.getListOfImages());
+                for (String image : listOfImages) {
+                    record += image;
+                    if (i < listOfImages.size()) {
+                        record += RestaurantSettings.getImagesSeparator();
+                    }
+                    i++;
                 }
-                ;
                 printWriter.println(record);
             }
+            System.out.println("Aktuální seznam jídel byl uložen do souboru: " + FileName);
         } catch (IOException e) {
             throw new RestaurantException("Došlo k chybě při zápisu do souboru" + e.getLocalizedMessage());
         }
@@ -72,10 +73,10 @@ public class DishRepertoire {
     // vrátí řetězec - seznam všech jídel
     public String getDishRepertoire() {
         String allDishes = "Repertoár jídel: \n";
-        int a = 0;
+        int i = 0;
         for (Dish dish : dishRep) {
-            allDishes += "Pozice:" + a + ", název: " + dish.getTitle() + ", cena: " + dish.getPrice() + ",-Kč, doba přípravy: " + dish.getPreparationTime() + "min, kategorie: " + dish.getDishCategory().getDescription() + ", fotografie: " + dish.getListOfImages() + "\n";
-            a++;
+            allDishes += "Pozice:" + i + ", název: " + dish.getTitle() + ", cena: " + dish.getPrice() + ",-Kč, doba přípravy: " + dish.getPreparationTime() + "min, kategorie: " + dish.getDishCategory().getDescription() + ", fotografie: " + dish.getListOfImages() + "\n";
+            i++;
         }
         return allDishes;
     }
@@ -86,9 +87,9 @@ public class DishRepertoire {
     }
 
     // odebrání jídla z repertoáru na určené pozici
-    public void removeDishFromDishRep(int b) {
-        if (dishRep.size() >= b + 1) {
-            dishRep.remove(b);
+    public void removeDishFromDishRep(int indexR) {
+        if (dishRep.size() >= indexR + 1) {
+            dishRep.remove(indexR);
         }
     }
 
@@ -96,7 +97,6 @@ public class DishRepertoire {
     public Dish getDishAtIndex(int index) {
         return dishRep.get(index);
     }
-
 
     //setřídí Arraylist podle jména
     public void sort() {

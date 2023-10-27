@@ -20,19 +20,19 @@ public class DishMenu {
     }
 
     // přidá jídlo z repertoáru do menu
-    public static void addDishToMenu(DishRepertoire dishR, int d) {
+    public static void addDishToMenu(DishRepertoire dishR, int indexR) {
         Set<Dish> menuS = new HashSet<>(menu);
-        if (dishR.getDishRep().size() >= d + 1) {
-            menuS.add(dishR.getDishAtIndex(d));
+        if (dishR.getDishRep().size() >= indexR + 1) {
+            menuS.add(dishR.getDishAtIndex(indexR));
             menu = new ArrayList<>(menuS);
             Collections.sort(menu, new DishComparator());
         }
     }
 
     // odebere jídlo z menu
-    public static void removeDishFromMenu(int a) {
-        if (menu.size() >= a + 1) {
-            menu.remove(a);
+    public static void removeDishFromMenu(int index) {
+        if (menu.size() >= index + 1) {
+            menu.remove(index);
         }
     }
 
@@ -44,21 +44,21 @@ public class DishMenu {
     // vrátí seznam všech jídel v menu
     public static String getAllDishMenu() {
         String allDishesMenu = "Menu: \n";
-        int a = 0;
+        int i = 0;
         for (Dish dish : menu) {
-            allDishesMenu += "Pozice:" + a + ", název: " + dish.getTitle() + ", cena: " + dish.getPrice() + ",-Kč, doba přípravy: " + dish.getPreparationTime() + "min, kategorie: " + dish.getDishCategory().getDescription() + ", fotografie: " + dish.getListOfImages() + "\n";
-            a++;
+            allDishesMenu += "Pozice:" + i + ", název: " + dish.getTitle() + ", cena: " + dish.getPrice() + ",-Kč, doba přípravy: " + dish.getPreparationTime() + "min, kategorie: " + dish.getDishCategory().getDescription() + ", fotografie: " + dish.getListOfImages() + "\n";
+            i++;
         }
         return allDishesMenu;
     }
 
-    public static void addAllFromFileToMenu(File fileName) throws RestaurantException {
+    public static void addAllFromFileToMenu(String fileName) {
         int lineNumber = 0;
         String[] items = new String[0];
         String line = "";
-        if (file.exists()) {
-            try (Scanner scanner = new Scanner(new BufferedReader(new FileReader(fileName)))) {
-                while (scanner.hasNextLine()) {
+        try (Scanner scanner = new Scanner(new BufferedReader(new FileReader(fileName)))) {
+            while (scanner.hasNextLine()) {
+                try {
                     lineNumber++;
                     line = scanner.nextLine();
                     items = line.split(RestaurantSettings.getItemsSeparator());
@@ -69,15 +69,15 @@ public class DishMenu {
                         Dish dish = new Dish(items[0], new BigDecimal(items[1]), Integer.parseInt(items[2]), DishCategory.valueOf(items[3]));
                         menu.add(dish);
                     } else {
-                        throw new RestaurantException("Špatný počet položek na řádku " + lineNumber);
+                        System.err.println("Špatný počet položek na řádku " + lineNumber + "\n jídlo nebylo ořidáno do menu");
                     }
+                } catch (NumberFormatException | RestaurantException e) {
+                    System.err.println("Špatně zadaná jedna nebo více hodnot v souboru " + fileName + " na řádku " + lineNumber + ": " + items[1] + "," + items[2] + "\n-- jídlo nebylo přidáno do menu --" + "\n" + e.getLocalizedMessage());
                 }
                 Collections.sort(menu, new DishComparator());
-            } catch (FileNotFoundException e) {
-                throw new RestaurantException("Nepodařilo se nalézt soubor " + fileName + "\n" + e.getLocalizedMessage());
-            } catch (NumberFormatException e) {
-                throw new RestaurantException("Špatně zadaná jedna nebo více hodnot v souboru " + fileName + " na řádku " + lineNumber + ": " + items[1] + "," + items[2] + "\n" + e.getLocalizedMessage());
             }
+        } catch (FileNotFoundException e) {
+            System.err.println("Nepodařilo se nalézt soubor " + fileName + "\n" + e.getLocalizedMessage());
         }
     }
 
@@ -94,6 +94,7 @@ public class DishMenu {
                 ;
                 printWriter.println(record);
             }
+            System.out.println("Aktuální menu bylo uloženo do souboru: " + FileName);
         } catch (IOException e) {
             throw new RestaurantException("Došlo k chybě při zápisu do souboru" + e.getLocalizedMessage());
         }

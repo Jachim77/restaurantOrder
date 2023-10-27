@@ -85,11 +85,11 @@ public class Dish implements Comparable<Dish> {
     }
 
     //odebrání fotografie
-    public void removeImage(int c) throws RestaurantException {
+    public void removeImage(int number) throws RestaurantException {
         if (listOfImages.size() <= 1) {
             throw new RestaurantException("Fotografii nelze odebrat, v seznamu je pouze jedna fotografie");
         }
-        listOfImages.remove(c);
+        listOfImages.remove(number);
     }
 
 
@@ -105,8 +105,8 @@ public class Dish implements Comparable<Dish> {
     }
 
     @Override
-    public int compareTo(Dish o) {
-        int result = getTitle().compareTo(o.getTitle());
+    public int compareTo(Dish dish) {
+        int result = getTitle().compareTo(dish.getTitle());
         return result;
     }
 

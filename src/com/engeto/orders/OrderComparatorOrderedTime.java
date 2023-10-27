@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 public class OrderComparatorOrderedTime implements Comparator<Order> {
     @Override
-    public int compare(Order o1, Order o2) {
-        return o1.getOrderedTime().compareTo(o2.getOrderedTime());
+    public int compare(Order order1, Order order2) {
+        return order1.getOrderedTime().compareTo(order2.getOrderedTime());
     }
 }

@@ -58,8 +58,8 @@ public class Waiter implements Comparable<Waiter> {
     }
 
     @Override
-    public int compareTo(Waiter o) {
-        return getSurname().compareTo(o.getSurname());
+    public int compareTo(Waiter waiter) {
+        return getSurname().compareTo(waiter.getSurname());
     }
 
     @Override

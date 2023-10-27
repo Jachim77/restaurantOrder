@@ -27,9 +27,9 @@ public class Order {
 
     public Order(int orderList, int tableId, int indexMenu, int numberOfPieces, int waiterId) throws RestaurantException {
         if (indexMenu >= (DishMenu.getMenu().size())) {
-            throw new RestaurantException("Zadané id jídla v menu neexistuje: " + indexMenu);
+            throw new RestaurantException("Objednávka nebyla vytvořena, zadaný index jídla v menu neexistuje: " + indexMenu);
         }
-        if (checkLastOrderId() > nextId) {
+        if (checkLastOrderId() >= nextId) {
             nextId = checkLastOrderId() + 1;
         }
         this.orderId = nextId++;
@@ -44,6 +44,10 @@ public class Order {
     public Order(int orderId, int orderList, int tableId, LocalDateTime orderedTime, int indexMenu, int numberOfPieces, LocalDateTime fulfilmentTime, int waiterId) throws RestaurantException {
         if (checkIfIdAlreadyExists(orderId)) {
             throw new RestaurantException("Uvedené id objednávky již existuje: " + orderId);
+        }
+        if (DishMenu.getMenu().isEmpty()) {
+            throw new RestaurantException("Menu je prázdné, objednávku nelze vytvořit");
+
         }
         this.orderId = orderId;
         this.orderList = orderList;
@@ -108,6 +112,7 @@ public class Order {
 
     public void setFulfilmentTime(LocalDateTime localTime) {
         this.fulfilmentTime = localTime;
+        System.out.println("Objednávka id:" + orderId + " byla uzavřena " + localTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd : HH:mm")));
     }
 
     public int getWaiterId() {
@@ -123,10 +128,10 @@ public class Order {
     public int checkLastOrderId() throws RestaurantException {
         if (file.exists()) {
             int lineNumber = 0;
-            String line = "";
-            String[] items = new String[0];
+            String line;
+            String[] items;
             List<Integer> idSL = new ArrayList<>();
-            Integer[] idSA = new Integer[0];
+            Integer[] idSA;
             try (Scanner scanner = new Scanner(new BufferedReader(new FileReader(file)))) {
                 while (scanner.hasNextLine()) {
                     lineNumber++;
@@ -136,6 +141,9 @@ public class Order {
                 }
                 idSA = idSL.toArray(idSL.toArray(new Integer[0]));
                 Arrays.sort(idSA, Collections.reverseOrder());
+                if (idSA.length == 0) {
+                    return 0;
+                }
                 return idSA[0];
             } catch (NumberFormatException e) {
                 throw new RestaurantException("Chybný údaj na řádku" + lineNumber + "\n" + e.getLocalizedMessage());
@@ -145,9 +153,9 @@ public class Order {
         } else return 0;
     }
 
-    public Boolean checkIfIdAlreadyExists(int a) {
+    public Boolean checkIfIdAlreadyExists(int checkId) {
         for (Order order : OrderList.getOrderSummary()) {
-            if (order.getOrderId() == a) {
+            if (order.getOrderId() == checkId) {
                 return true;
             }
         }

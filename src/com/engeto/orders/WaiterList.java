@@ -31,13 +31,13 @@ public class WaiterList {
     }
 
     // vrátí číšníka z listu s daným id
-    public static Waiter getWaiterFromList(int a) throws RestaurantException {
+    public static Waiter getWaiterFromList(int idNumber) throws RestaurantException {
         for (Waiter waiter : waiters) {
-            if (waiter.getId() == a) {
+            if (waiter.getId() == idNumber) {
                 return waiter;
             }
         }
-        throw new RestaurantException("Nepodařilo se nalézt číšníka s uvedeným id: " + a);
+        throw new RestaurantException("Nepodařilo se nalézt číšníka s uvedeným id: " + idNumber);
     }
 
     //vrátí seznam všech číšníků
@@ -83,6 +83,7 @@ public class WaiterList {
                         + waiter.getSurname();
                 printWriter.println(record);
             }
+            System.out.println("Aktuální seznam číšníků byl uložen do souboru: " + FileName);
         } catch (IOException e) {
             throw new RestaurantException("Došlo k chybě při zápisu do souboru" + e.getLocalizedMessage());
         }
@@ -110,11 +111,11 @@ public class WaiterList {
     }
 
     //odebere číšníka s daným id ze seznamu
-    public void removeWaiterWithId(int d) throws RestaurantException {
+    public void removeWaiterWithId(int idNumber) throws RestaurantException {
         for (Waiter waiter : waiters) {
-            if (waiter.getId() == d) {
-                waiters.remove(d);
-            } else throw new RestaurantException("Nepodařilo se najít číšníka s uvedeným id: " + d);
+            if (waiter.getId() == idNumber) {
+                waiters.remove(idNumber);
+            } else throw new RestaurantException("Nepodařilo se najít číšníka s uvedeným id: " + idNumber);
         }
     }
 
